@@ -176,11 +176,11 @@ class Window(tk.Tk):
         self.table = tk.Toplevel()
         # self.table.attributes('-topmost', True)
         self.table.title('Danh sách sản phẩm')
-        self.table.geometry("1200x424")
+        self.table.geometry("1280x424")
         self.table.resizable(False, False)
         # Construct Treeview
         columns = ['S_T_T', 'Tên_sản_phẩm', 'Giá_nhỏ_nhất',
-                'Giá_lớn_nhất', 'Đã_bán', 'Sao_đánh_giá', 'Link_sản_phẩm']
+                'Giá_lớn_nhất', 'Đã_bán', 'Sao_đánh_giá', 'Giảm_giá_(%)', 'Link_sản_phẩm']
         self.productTree = ttk.Treeview(
             self.table, columns=columns, show='headings', cursor="hand2 orange")
 
@@ -193,11 +193,12 @@ class Window(tk.Tk):
         columnConstructor('Giá_lớn_nhất', 'Giá lớn nhất', 100)
         columnConstructor('Đã_bán', 'Đã bán', 80)
         columnConstructor('Sao_đánh_giá', 'Sao đánh giá', 100)
-        columnConstructor('Link_sản_phẩm', 'Link sản phẩm', 300)
+        columnConstructor('Giảm_giá_(%)', 'Giảm giá (%)', 80)
+        columnConstructor('Link_sản_phẩm', 'Link sản phẩm', 200)
         contacts = []
         for i in range(0, len(self.productList)):
             contacts.append((i+1, self.productList[i].name, self.productList[i].minPrice, self.productList[i].maxPrice,
-                            self.productList[i].sales, '%.1f' % self.productList[i].rating, self.productList[i].link))
+                            self.productList[i].sales, '%.1f' % self.productList[i].rating if self.productList[i].rating is not None else None, self.productList[i].discount, self.productList[i].link))
         self.productTree.tag_configure('oddrow', background="#7DE5ED")
         self.productTree.tag_configure('evenrow', background="white")
         count = 0

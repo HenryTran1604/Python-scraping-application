@@ -2,12 +2,36 @@ from concurrent.futures import ThreadPoolExecutor
 from tkinter import messagebox
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import time
 import csv
 from Product import Product
 import os
 
 PATH = 'data/Chromedriver/chromedriver.exe'
+
+def login():
+    options = webdriver.ChromeOptions()
+    options.add_argument('--no-sandbox')
+    # options.add_argument('--headless') #Run in headless mode, i.e., without a UI or display server dependencies. 
+    options.add_argument('--disable-notifications')#Disables the Web Notification and the Push APIs.
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36")
+
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    driver = webdriver.Chrome(executable_path=PATH, options=options)
+    driver.get("https://shopee.vn/buyer/login")
+
+    # Tìm và điền thông tin đăng nhập (sửa thành tài khoản và mật khẩu của bạn)
+    username_input = driver.find_element("name", "loginKey")
+    username_input.send_keys("your_username_here")
+
+    password_input = driver.find_element("name", "password")
+    password_input.send_keys("your_password_here")
+    
+    # Submit form đăng nhập
+    password_input.send_keys(Keys.ENTER)
+    time.sleep(3)
+    return driver
 
 def generateLinks(numberOfPage, searched_product):
     urlList = []
@@ -17,11 +41,8 @@ def generateLinks(numberOfPage, searched_product):
         urlList.append(url)
     return urlList
 
-def getHtml(url):  # get source code of web
+def getHtml(driver, url):  # get source code of web
     try:
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        driver = webdriver.Chrome(executable_path=PATH, options=options)
         driver.get(url)
         time.sleep(3)
         for i in range(15):
@@ -29,14 +50,14 @@ def getHtml(url):  # get source code of web
             time.sleep(0.1)
         
         html = driver.page_source
-        driver.close()
         soup = BeautifulSoup(html, 'lxml')
         return soup
-    except :
+    except:
         return None
 
-def fillProductList(root, url):
-    soup = getHtml(url)
+def fillProductList(root, driver, url):
+    soup = getHtml(driver, url)
+    print(soup)
     if soup == None:
         return
     items = soup.find_all('div', class_='col-xs-2-4 shopee-search-item-result__item')
@@ -54,8 +75,9 @@ def fillProductList(root, url):
 
         # rating
         stars = item.findAll('div', class_='shopee-rating-stars__lit')
-        rating = 0
-        if stars != None:
+        rating = None
+        if len(stars) != 0:
+            rating = 0
             for star in stars:
                 rating += float(star['style'].split()[1][:-2]) / 100
 
@@ -66,14 +88,21 @@ def fillProductList(root, url):
 
         # link
         linkItem = 'https://shopee.vn' + item.find('a')['href']
-        p = Product(nameItem, minPrice, maxPrice, rating, sales, linkItem)
+        discount_tmp = item.find('span', class_='percent')
+        if discount_tmp == None:
+            discount = None
+        else:
+            discount = int(discount_tmp.text[:-1])
+        p = Product(nameItem, minPrice, maxPrice, rating, sales, linkItem, discount)
+        print(p)
         root.productList.append(p)
 def run(root, numberOfPage, searched_product):
     root.productList.clear()
+    driver = login()
     urls = generateLinks(numberOfPage, searched_product)
-    with ThreadPoolExecutor(max_workers=os.cpu_count() - 1) as executor:
-        for url in urls:
-            executor.submit(fillProductList, *[root, url])
+    for url in urls:
+        fillProductList(root, driver, url)
+    driver.close()
 
 def writeToFile(name, root):
     if len(name) == 0:
@@ -87,7 +116,7 @@ def writeToFile(name, root):
         try:
             writer = csv.writer(csvFile, delimiter='\t')
             writer.writerow(
-                ('Tên sản phẩm', 'Giá nhỏ nhất', 'Giá lớn nhất', 'Đánh giá sản phẩm', 'Doanh số', 'Link sản phẩm'))
+                ('Tên sản phẩm', 'Giá nhỏ nhất', 'Giá lớn nhất', 'Đánh giá sản phẩm', 'Doanh số', 'Giảm giá (%)', 'Link sản phẩm'))
             writer.writerows(root.productList)
         except:
             messagebox.showerror('ERROR', 'Đã có lỗi xảy ra!')
