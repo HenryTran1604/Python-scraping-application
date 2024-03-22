@@ -53,6 +53,7 @@ def getHtml(driver, url):  # get source code of web
         soup = BeautifulSoup(html, 'lxml')
         return soup
     except:
+        driver.close()
         return None
 
 def fillProductList(root, driver, url):
