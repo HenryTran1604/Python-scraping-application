@@ -16,6 +16,6 @@
     pip install -r requirements.txt
 ```
 - Deprecated: Đối với trường hợp khi run bị lỗi, các bạn cần lên trang chủ [Download_Chromedriver](https://chromedriver.chromium.org/downloads), chọn phiên bản tương thích với chương trình Chrome ở máy và thay thế vào thư mục `data/Chromedriver`
-> Bản Selenium mới nhất hiện không cần webdriver.
+> Bản Selenium mới nhất hiện không cần webdriver. Shopee cập nhật liên tục nên sẽ có thay đổi các bạn hãy tủy chỉnh code để phù hợp.
 ## III. Chạy ứng dụng
 Sau khi làm theo hướng dẫn trên, các bạn run file main.py
