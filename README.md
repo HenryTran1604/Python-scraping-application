@@ -15,6 +15,7 @@
 ```
     pip install -r requirements.txt
 ```
-- Đối với trường hợp khi run bị lỗi, các bạn cần lên trang chủ [Download_Chromedriver](https://chromedriver.chromium.org/downloads), chọn phiên bản tương thích với chương trình Chrome ở máy và thay thế vào thư mục `data/Chromedriver`
+- Deprecated: Đối với trường hợp khi run bị lỗi, các bạn cần lên trang chủ [Download_Chromedriver](https://chromedriver.chromium.org/downloads), chọn phiên bản tương thích với chương trình Chrome ở máy và thay thế vào thư mục `data/Chromedriver`
+> Bản Selenium mới nhất hiện không cần webdriver.
 ## III. Chạy ứng dụng
 Sau khi làm theo hướng dẫn trên, các bạn run file main.py

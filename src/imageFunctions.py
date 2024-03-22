@@ -18,7 +18,7 @@ def getHtml(url):   # get link ảnh vào urls = []
         try:
             options = webdriver.ChromeOptions()
             options.add_experimental_option('excludeSwitches', ['enable-logging'])
-            driver = webdriver.Chrome(executable_path=PATH, options=options)
+            driver = webdriver.Chrome(options=options)
             driver.get(url)
             time.sleep(2)
             for i in range(70):

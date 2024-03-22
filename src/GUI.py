@@ -5,8 +5,8 @@ from eventHandler import *
 import threading
 import webbrowser
 class Window(tk.Tk):
-    def __init__(self, productList):
-        self.productList = productList
+    def __init__(self):
+        self.productList = []
         tk.Tk.__init__(self)
         self.title('TEAM 16 - Python scraping')
         self.geometry(self.get_position(800, 500))
@@ -22,6 +22,7 @@ class Window(tk.Tk):
         self.style.theme_use("Tab")
         self.myfont = ('Inter', '11', 'bold')
         self.initPage()
+        self.initProgressBar()
 
     def get_position(self, window_width, window_height):
         screen_width = self.winfo_screenwidth()
@@ -33,10 +34,10 @@ class Window(tk.Tk):
     def accessToGithub(self):
         webbrowser.open("https://github.com/Team-16-Python-Scraping/final-python-scraping.git")
 
-    def showProgressBar(self):
+    def initProgressBar(self):
         self.win = tk.Toplevel()
         self.win.title('Đang xử lý...')
-        self.win.attributes("-topmost", True)
+        self.win.attributes("-topmost", 1)
         self.win.geometry(self.get_position(300, 120))
         self.win.resizable(False, False)
         self.pb = ttk.Progressbar(
@@ -52,11 +53,23 @@ class Window(tk.Tk):
             command=self.win.destroy
         )
         cancel_button.grid(column=0, row=1, padx=10, pady=10, sticky=tk.E)
+        self.win.withdraw()
+
+    def showProgressBar(self):
+        self.win.deiconify()
         self.pb.start()
+        def on_minimize(e):
+            self.win.withdraw()
+
+        def on_restore(e):
+            self.win.deiconify()
+        self.bind("<Unmap>", on_minimize)  # Khi cửa số bị minimize
+        self.bind("<Map>", on_restore)     # Khi cửa số được restore
+    
 
     def endProgressBar(self):
-        self.pb.destroy()
-        self.win.destroy()
+        self.pb.stop()
+        self.win.withdraw()
 
     def create_tab1(self):
         self.tab1 = ttk.Frame(self.tabControl)
@@ -262,6 +275,12 @@ class Window(tk.Tk):
         self.lb_exportToFile.pack(pady=10)
         self.e_exportToFile.pack(pady=5)
         self.btn_exportToFile.pack(pady=10)
+
+    def on_minimize(self):
+        pass
+
+    def on_maximize(self):
+        pass
 
     def run(self):
         self.mainloop()

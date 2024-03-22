@@ -1,4 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
 from tkinter import messagebox
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -18,15 +17,16 @@ def login():
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36")
 
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
-    driver = webdriver.Chrome(executable_path=PATH, options=options)
+    # service = Service(executable_path=PATH)
+    driver = webdriver.Chrome( options=options)
     driver.get("https://shopee.vn/buyer/login")
 
     # Tìm và điền thông tin đăng nhập (sửa thành tài khoản và mật khẩu của bạn)
     username_input = driver.find_element("name", "loginKey")
-    username_input.send_keys("your_username_here")
+    username_input.send_keys("username_here")
 
     password_input = driver.find_element("name", "password")
-    password_input.send_keys("your_password_here")
+    password_input.send_keys("password_here")
     
     # Submit form đăng nhập
     password_input.send_keys(Keys.ENTER)
@@ -57,7 +57,7 @@ def getHtml(driver, url):  # get source code of web
 
 def fillProductList(root, driver, url):
     soup = getHtml(driver, url)
-    print(soup)
+    # print(soup)
     if soup == None:
         return
     items = soup.find_all('div', class_='col-xs-2-4 shopee-search-item-result__item')
@@ -94,7 +94,7 @@ def fillProductList(root, driver, url):
         else:
             discount = int(discount_tmp.text[:-1])
         p = Product(nameItem, minPrice, maxPrice, rating, sales, linkItem, discount)
-        print(p)
+        # print(p)
         root.productList.append(p)
 def run(root, numberOfPage, searched_product):
     root.productList.clear()

@@ -1,4 +1,4 @@
 from GUI import *
 
-App = Window([])
+App = Window()
 App.run()
